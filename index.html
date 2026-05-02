@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Emova – Feel Heard</title>
+<title>Emova AI – Feel Heard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -122,7 +122,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.85rem
 <body>
 
 <nav>
-  <div class="logo"><div class="lorb" id="lorb"></div>Emova</div>
+  <div class="logo"><div class="lorb" id="lorb"></div>Emova AI</div>
   <div class="nr">
     <div class="badge">🔒 No Trace</div>
     <button class="ebtn" id="ebtn" onclick="endSess()">End Session</button>
@@ -175,7 +175,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:.85rem
   <div class="vm-text" id="vm-text">Start speaking...</div>
   <p class="vm-hint">Your words will appear above as you speak.</p>
   <div class="vm-actions">
-    <button class="vm-send" onclick="stopAndSend()">Send to Emova ➤</button>
+    <button class="vm-send" onclick="stopAndSend()">Send to Emova AI ➤</button>
     <button class="vm-cancel" onclick="cancelMic()">Cancel</button>
   </div>
   <p class="vm-enter-hint">You can also press Enter to send</p>
@@ -317,7 +317,7 @@ async function sendMsg(ov){
   const timer = setTimeout(()=>controller.abort(), 90000);
 
   try{
-    const res=await fetch('https://emova-ai.onrender.com/chat',{
+    const res=await fetch('http://localhost:3000/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:hist.slice(-6),emotion:(EM[ek]||EM.neutral).label}),
@@ -334,7 +334,7 @@ async function sendMsg(ov){
   }catch(err){
     clearTimeout(timer);
     if(err.name==='AbortError'){
-      addMsg('error','⏱️ Emova took too long to reply. Please try again.');
+      addMsg('error','⏱️ Emova AI took too long to reply. Please try again.');
     } else {
       const msg=err.message.includes('fetch')||err.message.includes('Failed')
         ?'❌ Cannot reach the server.<br><br>Make sure:<br>1. Terminal is open<br>2. You ran: python server.py<br>3. You see the 🚀 message'
@@ -465,7 +465,7 @@ async function endSess(){
   document.getElementById('ebtn').style.display='none';
   document.getElementById('end-screen').style.display='flex';
   document.getElementById('iwrap').style.display='none';
-  try{await fetch('https://emova-ai.onrender.com/end-session',{method:'POST'});}catch(e){}
+  try{await fetch('http://localhost:3000/end-session',{method:'POST'});}catch(e){}
 }
 function newSess(){
   document.getElementById('end-screen').style.display='none';
