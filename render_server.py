@@ -5,7 +5,8 @@ import urllib.error
 import json
 import os
 
-app = Flask(__name__, static_folder='.')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=BASE_DIR)
 CORS(app)
 
 API_KEY = os.environ.get("MISTRAL_API_KEY", "")
@@ -38,7 +39,12 @@ iCall India: 9152987821 | Vandrevala: 1860-2662-345"""
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(BASE_DIR, 'index.html')
+
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    return send_from_directory(BASE_DIR, filename)
 
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
@@ -48,35 +54,38 @@ def chat():
 
     data = request.get_json()
     messages = data.get('messages', [])
-    emotion = data.get('emotion', 'neutral')
+    emotion  = data.get('emotion', 'neutral')
 
     mistral_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages[-6:]
 
     req_data = json.dumps({
-        "model": "mistral-small-latest",
-        "messages": mistral_messages,
-        "max_tokens": 300,
+        "model":       "mistral-small-latest",
+        "messages":    mistral_messages,
+        "max_tokens":  300,
         "temperature": 0.8
     }).encode("utf-8")
 
     req = urllib.request.Request(
         "https://api.mistral.ai/v1/chat/completions",
-        data=req_data,
-        headers={
-            "Content-Type": "application/json",
+        data    = req_data,
+        headers = {
+            "Content-Type":  "application/json",
             "Authorization": f"Bearer {API_KEY}"
         },
-        method="POST"
+        method = "POST"
     )
 
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             result = json.loads(resp.read().decode("utf-8"))
-            reply = result["choices"][0]["message"]["content"]
+            reply  = result["choices"][0]["message"]["content"]
         return jsonify({"reply": reply})
     except urllib.error.HTTPError as e:
-        return jsonify({"error": str(e)}), 500
+        err = e.read().decode("utf-8")
+        print(f"Mistral error {e.code}: {err}")
+        return jsonify({"error": f"Mistral error {e.code}"}), 500
     except Exception as e:
+        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 

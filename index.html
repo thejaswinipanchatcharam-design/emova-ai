@@ -317,7 +317,7 @@ async function sendMsg(ov){
   const timer = setTimeout(()=>controller.abort(), 90000);
 
   try{
-    const res=await fetch('http://localhost:3000/chat',{
+    const res=await fetch('https://emova-ai.onrender.com/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:hist.slice(-6),emotion:(EM[ek]||EM.neutral).label}),
@@ -465,7 +465,7 @@ async function endSess(){
   document.getElementById('ebtn').style.display='none';
   document.getElementById('end-screen').style.display='flex';
   document.getElementById('iwrap').style.display='none';
-  try{await fetch('http://localhost:3000/end-session',{method:'POST'});}catch(e){}
+  try{await fetch('https://emova-ai.onrender.com/end-session',{method:'POST'});}catch(e){}
 }
 function newSess(){
   document.getElementById('end-screen').style.display='none';
